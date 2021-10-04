@@ -1,0 +1,23 @@
+body {
+    font-family: Arial;
+    font-size: 14px;
+}
+.btn {
+    font-size: 14px;
+}
+.logo {
+    font-size: 130%;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.menu-link {
+    font-size: 120%;
+}
+.formRow {
+    flex-shrink: 0;
+    margin-top: var(--bs-gutter-y);
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
