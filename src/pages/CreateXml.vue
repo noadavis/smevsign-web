@@ -53,6 +53,35 @@
                                 <a class="btn btn-primary" @click.prevent="TextToBase64" id="tobase64"><i class="fa fa-lg fa-file-archive-o"></i> Текст в base64</a>&nbsp;
                                 <a class="btn btn-primary" @click.prevent="Base64ToText" id="frombase64"><i class="fa fa-lg fa-file-text-o"></i> base64 в текст</a>
                             </div>
+                            
+
+
+                            <hr>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                            </div>
+                            <div class="col-md-9 form-group">
+                                <div class="form-check">
+                                    <div class="checkbox">
+                                        <input @change="updateUserCertificates" type="checkbox" id="usepersonal" class="form-check-input" v-model="usepersonal">
+                                        <label for="usepersonal">Подписать бизнес данные пользовательской подписью</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="usepersonal" class="formRow">
+                                <div class="col-md-3">
+                                    <label>Пользовательская подпись</label>
+                                </div>
+                                <div class="col-md-9 form-group">
+                                    <select class="form-select" id="personal" name="personal" v-model="personal">
+                                        <option v-for="item in personalCertificates.value" v-bind:value="item.id" v-bind:key="item.id">
+                                            {{ item.value }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
                             <hr>
                             <div class="col-md-3">
                                 <label>&nbsp;</label>
@@ -66,6 +95,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <textarea id="result" class="form-control" name="result" v-model="result" spellcheck="false" style="height: 250px;"></textarea>
+                                <p style="padding-top:20px;"><a target="_blank" href="http://qs.cryptopro.ru/SVS/Verify/">Проверка подписанной xml</a></p>
                             </div>
                         </div>
                     </div>
@@ -76,6 +106,9 @@
 </template>
 
 <script>
+    require("../helpers/cadesplugin_api.js");
+    import CryptoHelper from '../helpers/CryptoHelper.js'
+
     import ApiHelper from '../helpers/ApiHelper.js';
     import Utils from '../helpers/Utils.js';
     import { v1 as uuidv1 } from 'uuid';
@@ -86,19 +119,26 @@
         setup() {
             const store = useStore();
             const bdata = ref();
+            const personalCertificates = reactive({value: []});
+            const personal = ref();
+            const usepersonal = ref();
             const containers = reactive({value: []});
             const container = ref();
             const smevscheme = reactive({value: [{"key":"1","value":"1.1"},{"key":"2","value":"1.2"},{"key":"3","value":"1.3"}]});
             const scheme = ref();
             const uuid = ref();
             const result = ref();
-            const personalsign = ref();
             const apiHelper = new ApiHelper(store.getters.getBackendUrl);
             const utils = new Utils();
+            const cryptoHelper = new CryptoHelper();
+            const smevsignAlgorithmNames = {
+                "ГОСТ Р 34.10-2012 256 бит": "GOST3410_2012_256",
+                "ГОСТ Р 34.10-2012 512 бит": "GOST3410_2012_512",
+            }
             
             onMounted(async () => {
                 console.log('onMounted SignForm');
-                store.dispatch('updatePageHeader', 'CreateXml');
+                store.dispatch('updatePageHeader', 'Создать xml');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {
@@ -116,7 +156,9 @@
                     result.value = 'MessageId не указан!';
                     return;
                 }
-                let response = await apiHelper.json('/sign', {
+
+                // готовим объект для создания xml
+                let signObject = {
                     'request_type': 'sign_xml',
                     'data': bdata.value,
                     'sign_alias': container.value,
@@ -126,13 +168,79 @@
                         'uuid': uuid.value,
                         'xml_scheme': scheme.value
                     }
-                })
+                };
+
+                if (usepersonal.value) {
+                    // получаем расчет digest для нормализованного узла <SignedInfo>
+                    // в котором находится digest нормализованного содержимого MessagePrimaryContent
+                    // getnormalizedDigests возвращает 2 digest значения:
+                    // signedInfoDigest - значение которое необходимо подписать
+                    // digest - значение которое необходимо передать обратно для создания xml
+                    let normalizedDigests = await getnormalizedDigests();
+                    if (Object.keys(normalizedDigests).length == 0) {
+                        result.value = 'digest для подписи не получен';
+                        return;
+                    }
+                    // sha1 отпечаток и алгоритм выбранной пользовательской подписи
+                    let selectedThumbprint = personalCertificates.value[personal.value].thumbprint;
+                    let selectedAlgorithm = personalCertificates.value[personal.value].algorithm;
+                    // преобразуем signedInfoDigest: из base64 в hex
+                    let digestString = utils.base64Decode(normalizedDigests[selectedAlgorithm].signedInfoDigest);
+                    let digestHex = utils.stringToHex(digestString);
+                    
+                    
+                    const signature = await cryptoHelper.signSignedInfoDigest(
+                        selectedThumbprint, 
+                        selectedAlgorithm,
+                        digestHex
+                    );
+                    // преобразуем из hex в base64
+                    let signatureString = utils.hexToString(signature.hex);
+                    let signatureReversed = utils.reverse(signatureString);
+                    let signatureBase64 = utils.base64Encode(signatureReversed);
+
+                    signObject['personal_sign'] =  {
+                        'digest_value': normalizedDigests[selectedAlgorithm].digest,
+                        'certificate': signature.cert,
+                        'algorithm': selectedAlgorithm,
+                        'signature_value': signatureBase64
+                    }
+                }
+
+                // console.log(signObject);
+
+                let response = await apiHelper.json('/sign', signObject);
                 if (!response.error) {
                     result.value = Base64.decode(response.full_xml);
                 } else {
                     result.value = response.error_description;
                 }
             }
+
+            async function getnormalizedDigests() {
+                let normalizedDigests = {};
+                let digests = await apiHelper.json('/sign', {
+                    'request_type': 'sign_xml',
+                    'data': bdata.value,
+                    'options': {
+                        'sign_type': 'digest'
+                    }
+                })
+                // console.log(digests);
+                if (!digests.error) {
+                    for (const normalizedDigest of digests.digest) {
+                        normalizedDigests[normalizedDigest.algorithm] = {
+                            'digest': normalizedDigest.value,
+                            'signedInfoDigest': normalizedDigest.signed_info
+                        }
+                    }
+                } else {
+                    result.value = digests.error_description;
+                }
+                // console.log(normalizedDigests);
+                return normalizedDigests;
+            }
+
             function GenerateUuid() {
                 uuid.value = uuidv1();
             }
@@ -148,9 +256,30 @@
             function Base64ToText() {
                 if (bdata.value) bdata.value = Base64.decode(bdata.value);
             }
+            async function updateUserCertificates() {
+                if (usepersonal.value) {
+                    let certificates = await cryptoHelper.getUserCertificates('34.10-2012');
+                    // console.log(certificates);
+                    let index = 0;
+                    for (const cert of certificates) {
+                        personalCertificates.value.push({
+                            "id": index,
+                            "thumbprint": cert.thumbprint,
+                            "value": cert.subject + ' / ' + cert.validTo,
+                            "algorithm": smevsignAlgorithmNames[cert.algorithm]
+                        })
+                        index++;
+                    }
+                    // console.log(personalCertificates.value);
+                    if (personalCertificates.value.length > 0) {
+                        personal.value = personalCertificates.value[0].id;
+                    }
+                }
+            }
             return {
-                bdata, containers, container, personalsign, smevscheme, scheme, uuid, result, 
-                TextFormat, TextMinimize, TextToBase64, Base64ToText, SubmitForm, GenerateUuid
+                bdata, smevscheme, scheme, uuid, result, 
+                container, containers, usepersonal, personal, personalCertificates,
+                TextFormat, TextMinimize, TextToBase64, Base64ToText, SubmitForm, GenerateUuid, updateUserCertificates
             }
         }
     }

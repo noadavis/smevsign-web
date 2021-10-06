@@ -13,6 +13,7 @@ export default class ApiHandler {
         };
     }
     load(url, data) {
+        console.log('ApiHandler: load');
         console.log(data);
         let formData = new FormData();
         for (const [key, value] of Object.entries(data)) {
@@ -33,6 +34,7 @@ export default class ApiHandler {
         });
     }
     json(url, data) {
+        console.log('ApiHandler: json');
         console.log(data);
         let formData = JSON.stringify(data);
         return new Promise((resolve, reject) => {

@@ -10,7 +10,6 @@ export default class Utils {
 	}
     prettyXml(value) {
         var shift = this.createShiftArr();
-        console.log(shift);
         // eslint-disable-next-line
         var ar = value.replace(/>\s{0,}</g,"><").replace(/</g,"~::~<").replace(/\s*xmlns\:/g,"~::~xmlns:").replace(/\s*xmlns\=/g,"~::~xmlns=").split('~::~'),
             len = ar.length,
