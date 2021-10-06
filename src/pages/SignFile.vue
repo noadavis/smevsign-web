@@ -18,7 +18,7 @@
         setup() {
             const store = useStore();
             onMounted(async () => {
-                store.dispatch('updatePageHeader', 'SignFile');
+                store.dispatch('updatePageHeader', 'Подпись файла');
             })
         }
     }

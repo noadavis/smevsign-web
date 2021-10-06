@@ -18,7 +18,7 @@
         setup() {
             const store = useStore();
             onMounted(async () => {
-                store.dispatch('updatePageHeader', 'SignXml');
+                store.dispatch('updatePageHeader', 'Подписание xml');
             })
         }
     }

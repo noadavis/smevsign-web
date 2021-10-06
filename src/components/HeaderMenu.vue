@@ -3,7 +3,7 @@
         <div class="container">
             <ul>
                 <li class="menu-item  ">
-                    <router-link to="/" class='menu-link'><i class="fa fa-dashboard"></i><span>Home</span></router-link>
+                    <router-link to="/" class='menu-link'><i class="fa fa-home"></i><span>Home</span></router-link>
                 </li>
                 <li class="menu-item  ">
                     <router-link to="/create" class='menu-link'><i class="fa fa-pencil"></i><span>CreateXml</span></router-link>

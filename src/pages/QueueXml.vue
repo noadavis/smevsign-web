@@ -77,6 +77,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <textarea id="result" class="form-control" name="result" v-model="result" spellcheck="false" style="height: 250px;"></textarea>
+                                <p style="padding-top:20px;"><a target="_blank" href="http://qs.cryptopro.ru/SVS/Verify/">Проверка подписанной xml</a></p>
                             </div>
                         </div>
                     </div>
@@ -110,7 +111,7 @@
             
             onMounted(async () => {
                 console.log('onMounted QueueXml');
-                store.dispatch('updatePageHeader', 'QueueXml');
+                store.dispatch('updatePageHeader', 'Опрос очереди СМЭВ');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {
