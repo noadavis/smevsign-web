@@ -23,9 +23,6 @@ export const store = createStore({
     actions: {
         async updateSystemInfo({ commit }) {
             console.log('store/index updateSystemInfo');
-            // let data = {
-            //     'backendUrl': window.__env.api.backendUrl
-            // };
             let data = {
                 'backendUrl': 'http://127.0.0.1:8080/api/'
             };
