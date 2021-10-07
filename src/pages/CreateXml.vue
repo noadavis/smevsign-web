@@ -30,6 +30,14 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <label>Тип xml</label>
+                            </div>
+                            <div class="col-md-9 form-group">
+                                <select class="form-select" id="xmltype" name="xmltype" v-model="xmltype">
+                                    <option value="SendRequestRequest">SendRequestRequest</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <label>MessageId, uuid.v1</label>
                                 <div style="float: right;">
                                     <a @click.prevent="GenerateUuid" class="btn btn-info btn-sm me-1 mb-1"><i class="fa fa-lg fa-gear"></i></a>
@@ -53,9 +61,6 @@
                                 <a class="btn btn-primary" @click.prevent="TextToBase64" id="tobase64"><i class="fa fa-lg fa-file-archive-o"></i> Текст в base64</a>&nbsp;
                                 <a class="btn btn-primary" @click.prevent="Base64ToText" id="frombase64"><i class="fa fa-lg fa-file-text-o"></i> base64 в текст</a>
                             </div>
-                            
-
-
                             <hr>
                             <div class="col-md-3">
                                 <label>&nbsp;</label>
@@ -80,8 +85,6 @@
                                     </select>
                                 </div>
                             </div>
-
-
                             <hr>
                             <div class="col-md-3">
                                 <label>&nbsp;</label>
@@ -119,6 +122,7 @@
         setup() {
             const store = useStore();
             const bdata = ref();
+            const xmltype = ref();
             const personalCertificates = reactive({value: []});
             const personal = ref();
             const usepersonal = ref();
@@ -137,14 +141,15 @@
             }
             
             onMounted(async () => {
-                console.log('onMounted SignForm');
-                store.dispatch('updatePageHeader', 'Создать xml');
+                console.log('onMounted CreateXml');
+                store.dispatch('updatePageHeader', 'Создание xml');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {
                     container.value = containers.value[0].value;
                 }
                 scheme.value = smevscheme.value[0].value;
+                xmltype.value = 'SendRequestRequest';
             })
             
             async function SubmitForm() {
@@ -163,7 +168,7 @@
                     'data': bdata.value,
                     'sign_alias': container.value,
                     'options': {
-                        'data_type': 'SendRequestRequest',
+                        'data_type': xmltype.value,
                         'sign_type': 'create',
                         'uuid': uuid.value,
                         'xml_scheme': scheme.value
@@ -188,7 +193,7 @@
                     let digestString = utils.base64Decode(normalizedDigests[selectedAlgorithm].signedInfoDigest);
                     let digestHex = utils.stringToHex(digestString);
                     
-                    
+                    // подписываем hex значение signedInfoDigest пользовательской подписью
                     const signature = await cryptoHelper.signSignedInfoDigest(
                         selectedThumbprint, 
                         selectedAlgorithm,
@@ -277,7 +282,7 @@
                 }
             }
             return {
-                bdata, smevscheme, scheme, uuid, result, 
+                bdata, xmltype, smevscheme, scheme, uuid, result, 
                 container, containers, usepersonal, personal, personalCertificates,
                 TextFormat, TextMinimize, TextToBase64, Base64ToText, SubmitForm, GenerateUuid, updateUserCertificates
             }
