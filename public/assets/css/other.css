@@ -22,5 +22,5 @@ body {
     flex-wrap: wrap;
 }
 .layout-horizontal .main-navbar ul > .menu-item {
-    padding: 0 15px;
+    padding: 0 10px;
 }
