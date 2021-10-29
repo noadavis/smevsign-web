@@ -263,6 +263,7 @@
             }
             async function updateUserCertificates() {
                 if (usepersonal.value) {
+                    personalCertificates.value = [];
                     let certificates = await cryptoHelper.getUserCertificates('34.10-2012');
                     // console.log(certificates);
                     let index = 0;
