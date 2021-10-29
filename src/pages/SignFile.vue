@@ -72,6 +72,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <a @click.prevent="SubmitForm" class="btn btn-primary me-1 mb-1">Подписать файлы</a>
+                                <JsonButton />
                             </div>
                             <hr>
                             <div class="col-md-3">
@@ -95,6 +96,7 @@
     import { Base64 } from 'js-base64';
     import { useStore } from 'vuex'
     import { ref, reactive, onMounted } from 'vue'
+    import JsonButton from '../components/JsonButton.vue'
     export default {
         setup() {
             const store = useStore();
@@ -149,6 +151,9 @@
                 if (archive.value) {
                     SignObject.options['zip_name'] = archname.value;
                 }
+
+                document.getElementById("json").innerHTML = JSON.stringify(SignObject, undefined, 4);
+
                 let response = await apiHelper.json('/sign', SignObject);
                 if (!response.error) {
                     result.value = Base64.decode(response.full_xml);
@@ -169,6 +174,9 @@
                 storage, detached, archive, archname, files, result, container, containers, //error,
                 SubmitForm, saveStoragePath, deleteStoragePath
             }
+        },
+        components: {
+            JsonButton
         }
     }
 </script>

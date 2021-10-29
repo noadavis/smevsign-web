@@ -24,3 +24,6 @@ body {
 .layout-horizontal .main-navbar ul > .menu-item {
     padding: 0 10px;
 }
+.modal-dialog {
+    max-width: 750px;
+}

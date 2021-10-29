@@ -70,6 +70,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <a @click.prevent="SubmitForm" class="btn btn-primary me-1 mb-1">Создать xml</a>
+                                <JsonButton />
                             </div>
                             <hr>
                             <div class="col-md-3">
@@ -93,6 +94,7 @@
     import { Base64 } from 'js-base64';
     import { useStore } from 'vuex'
     import { ref, reactive, onMounted } from 'vue'
+    import JsonButton from '../components/JsonButton.vue'
     export default {
         setup() {
             const store = useStore();
@@ -130,7 +132,7 @@
                         return;
                     }
                 }
-                let request = {
+                let SignObject = {
                     'request_type': request_type,
                     'sign_alias': container.value,
                     'options': {
@@ -140,10 +142,13 @@
                     }
                 }
                 if (rootelement.value && namespace.value) {
-                    request.options.root_element = rootelement.value;
-                    request.options.namespace = namespace.value;
+                    SignObject.options.root_element = rootelement.value;
+                    SignObject.options.namespace = namespace.value;
                 }
-                let response = await apiHelper.json('/sign', request)
+
+                document.getElementById("json").innerHTML = JSON.stringify(SignObject, undefined, 4);
+
+                let response = await apiHelper.json('/sign', SignObject)
                 if (!response.error) {
                     result.value = Base64.decode(response.full_xml);
                 } else {
@@ -160,6 +165,9 @@
                 containers, container, smevscheme, scheme, uuid, result, xmltype, xml, rootelement, namespace, 
                 SubmitForm, GenerateUuid, isAck, xmlChange
             }
+        },
+        components: {
+            JsonButton
         }
     }
 </script>

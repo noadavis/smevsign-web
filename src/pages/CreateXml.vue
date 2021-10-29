@@ -91,6 +91,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <a @click.prevent="SubmitForm" class="btn btn-primary me-1 mb-1">Создать xml</a>
+                                <JsonButton />
                             </div>
                             <hr>
                             <div class="col-md-3">
@@ -111,13 +112,13 @@
 <script>
     require("../helpers/cadesplugin_api.js");
     import CryptoHelper from '../helpers/CryptoHelper.js'
-
     import ApiHelper from '../helpers/ApiHelper.js';
     import Utils from '../helpers/Utils.js';
     import { v1 as uuidv1 } from 'uuid';
     import { Base64 } from 'js-base64';
     import { useStore } from 'vuex'
     import { ref, reactive, onMounted } from 'vue'
+    import JsonButton from '../components/JsonButton.vue'
     export default {
         setup() {
             const store = useStore();
@@ -213,6 +214,7 @@
                 }
 
                 // console.log(signObject);
+                document.getElementById("json").innerHTML = JSON.stringify(signObject, undefined, 4);
 
                 let response = await apiHelper.json('/sign', signObject);
                 if (!response.error) {
@@ -287,6 +289,9 @@
                 container, containers, usepersonal, personal, personalCertificates,
                 TextFormat, TextMinimize, TextToBase64, Base64ToText, SubmitForm, GenerateUuid, updateUserCertificates
             }
+        },
+        components: {
+            JsonButton
         }
     }
 </script>

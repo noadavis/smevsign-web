@@ -49,6 +49,7 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 <a @click.prevent="SubmitForm" class="btn btn-primary me-1 mb-1">Подписать xml</a>
+                                <JsonButton />
                             </div>
                             <hr>
                             <div class="col-md-3">
@@ -72,6 +73,7 @@
     import { Base64 } from 'js-base64';
     import { useStore } from 'vuex'
     import { ref, reactive, onMounted } from 'vue'
+    import JsonButton from '../components/JsonButton.vue'
     export default {
         setup() {
             const store = useStore();
@@ -100,7 +102,7 @@
                     return;
                 }
 
-                let response = await apiHelper.json('/sign', {
+                let signObject = {
                     'request_type': 'sign_xml',
                     'data': bdata.value,
                     'sign_alias': container.value,
@@ -108,7 +110,11 @@
                         'data_type': xmltype.value,
                         'sign_type': 'sign'
                     }
-                });
+                };
+                
+                document.getElementById("json").innerHTML = JSON.stringify(signObject, undefined, 4);
+
+                let response = await apiHelper.json('/sign', signObject);
                 if (!response.error) {
                     result.value = Base64.decode(response.full_xml);
                 } else {
@@ -132,6 +138,9 @@
                 bdata, xmltype, result, container, containers,
                 TextFormat, TextMinimize, TextToBase64, Base64ToText, SubmitForm
             }
+        },
+        components: {
+            JsonButton
         }
     }
 </script>
