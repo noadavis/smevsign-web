@@ -178,10 +178,10 @@
                 if (usepersonal.value) {
                     // получаем расчет digest для нормализованного узла <SignedInfo>
                     // в котором находится digest нормализованного содержимого MessagePrimaryContent
-                    // getnormalizedDigests возвращает 2 digest значения:
+                    // getNormalizedDigests возвращает 2 digest значения:
                     // signedInfoDigest - значение которое необходимо подписать
                     // digest - значение которое необходимо передать обратно для создания xml
-                    let normalizedDigests = await getnormalizedDigests();
+                    let normalizedDigests = await getNormalizedDigests();
                     if (Object.keys(normalizedDigests).length == 0) {
                         result.value = 'digest для подписи не получен';
                         return;
@@ -222,7 +222,7 @@
                 }
             }
 
-            async function getnormalizedDigests() {
+            async function getNormalizedDigests() {
                 let normalizedDigests = {};
                 let digests = await apiHelper.json('/sign', {
                     'request_type': 'sign_xml',
