@@ -156,7 +156,7 @@
 
                 let response = await apiHelper.json('/sign', SignObject);
                 if (!response.error) {
-                    result.value = Base64.decode(response.full_xml);
+                    result.value = Base64.decode(response.value);
                 } else {
                     result.value = response.error_description;
                 }

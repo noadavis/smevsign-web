@@ -17,6 +17,9 @@
                 <li class="menu-item  ">
                     <router-link to="/files" class='menu-link'><i class="fa fa-file"></i><span>SignFile</span></router-link>
                 </li>
+                <li class="menu-item  ">
+                    <router-link to="/string" class='menu-link'><i class="fa fa-file-text-o"></i><span>SignString</span></router-link>
+                </li>
             </ul>
         </div>
     </nav>
