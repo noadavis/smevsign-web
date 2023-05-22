@@ -71,9 +71,9 @@
     import ApiHelper from '../helpers/ApiHelper.js';
     import Utils from '../helpers/Utils.js';
     import { Base64 } from 'js-base64';
-    import { useStore } from 'vuex'
-    import { ref, reactive, onMounted } from 'vue'
-    import JsonButton from '../components/JsonButton.vue'
+    import { useStore } from '@/store';
+    import { ref, reactive, onMounted } from 'vue';
+    import JsonButton from '../components/JsonButton.vue';
     export default {
         setup() {
             const store = useStore();
@@ -82,12 +82,12 @@
             const containers = reactive({value: []});
             const container = ref();
             const result = ref();
-            const apiHelper = new ApiHelper(store.getters.getBackendUrl);
+            const apiHelper = new ApiHelper(store.getBackendUrl);
             const utils = new Utils();
 
             onMounted(async () => {
                 console.log('onMounted SignXml');
-                store.dispatch('updatePageHeader', 'Подписание xml');
+                store.updatePageHeader('Подписание xml');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {

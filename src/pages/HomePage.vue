@@ -29,23 +29,23 @@
 </template>
 
 <script>
-    import { useStore } from 'vuex'
-    import { onMounted, ref } from 'vue'
+    import { useStore } from '@/store';
+    import { onMounted, ref } from 'vue';
     export default {
         setup() {
             const backUrl = ref();
             const store = useStore();
             onMounted(async () => {
-                store.dispatch('updatePageHeader', 'Home');
-                backUrl.value = store.getters.getBackendUrl;
+                store.updatePageHeader('Home');
+                backUrl.value = store.getBackendUrl;
             })
             function saveBackendUrl() {
                 localStorage.setItem('backendUrl', backUrl.value)
-                store.dispatch('updateBackendUrl', backUrl.value);
+                store.updateBackendUrl(backUrl.value);
             }
             function deleteBackendUrl() {
                 localStorage.removeItem('backendUrl');
-                store.dispatch('updateBackendUrl', 'http://127.0.0.1:8080/api/');
+                store.updateBackendUrl('http://127.0.0.1:8080/api/');
                 backUrl.value = 'http://127.0.0.1:8080/api/';
             }
             return {

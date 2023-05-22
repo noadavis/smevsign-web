@@ -1,8 +1,6 @@
-### smevsign-web, vue3: Демонстрация rest api сервиса smevsign: формирования и подписания xml для СМЭВ3 [ https://github.com/noadavis/smevsign ]
+### smevsign-web, vue3: Демонстрация api сервиса smevsign: формирования и подписания xml для СМЭВ3 [ https://github.com/noadavis/smevsign ]
 
 [![title.png](title.png)](#title)
-
-### Для запуска проекта нет необходимости устанавливать nodejs и зависимости, достаточно запустить index.html из папки dist, проект готов к работе в firefox.
 
 ### Установка зависимостей
 ```
@@ -18,6 +16,12 @@ npm run serve
 ```
 npm run build
 ```
+
+### Настройка nginx для smevsign и smevsign-web
+- Настраиваем [smevsign](https://github.com/noadavis/smevsign) tomcat согласно инструкции проекта
+- Копируем production build [npm run build] в папку /home/dev/dist на сервере
+- Изменяем пользователя nginx в /etc/nginx/nginx.conf [ user dev; ]
+- Копируем конфиг config/nginx/default в /etc/nginx/sites-enabled/default
 
 ### Bootstrap 5 theme
 Mazer: https://github.com/zuramai/mazer

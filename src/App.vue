@@ -5,8 +5,8 @@
             <HeaderMenu></HeaderMenu>
         </header>
 
-        <div v-if="$store.state.updated" class="content-wrapper container">
-            <div class="page-heading"><h3>{{$store.getters.getPageHeader}}</h3></div>
+        <div v-if="store.getUpdated" class="content-wrapper container">
+            <div class="page-heading"><h3>{{store.getPageHeader}}</h3></div>
             <div class="page-content">
                 <section class="row">
                     
@@ -23,18 +23,19 @@
 </template>
 
 <script>
-    import Footer from './components/Footer.vue'
-    import HeaderLogo from './components/HeaderLogo.vue'
-    import HeaderMenu from './components/HeaderMenu.vue'
-    import { onBeforeMount } from 'vue'
-    import { useStore } from 'vuex'
+    import Footer from './components/Footer.vue';
+    import HeaderLogo from './components/HeaderLogo.vue';
+    import HeaderMenu from './components/HeaderMenu.vue';
+    import { onBeforeMount } from 'vue';
+    import { useStore } from '@/store';
     export default {
         setup() {
             const store = useStore();
             onBeforeMount(() => {
                 console.log('App onBeforeMount');
-                store.dispatch('updateSystemInfo');
+                store.updateSystemInfo();
             })
+            return { store }
         },
         components: {
             Footer, HeaderLogo, HeaderMenu

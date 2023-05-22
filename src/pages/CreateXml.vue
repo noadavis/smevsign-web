@@ -110,15 +110,15 @@
 </template>
 
 <script>
-    require("../helpers/cadesplugin_api.js");
-    import CryptoHelper from '../helpers/CryptoHelper.js'
+    //require("../helpers/cadesplugin_api.js");
+    import CryptoHelper from '../helpers/CryptoHelper.js';
     import ApiHelper from '../helpers/ApiHelper.js';
     import Utils from '../helpers/Utils.js';
     import { v1 as uuidv1 } from 'uuid';
     import { Base64 } from 'js-base64';
-    import { useStore } from 'vuex'
-    import { ref, reactive, onMounted } from 'vue'
-    import JsonButton from '../components/JsonButton.vue'
+    import { useStore } from '@/store';
+    import { ref, reactive, onMounted } from 'vue';
+    import JsonButton from '../components/JsonButton.vue';
     export default {
         setup() {
             const store = useStore();
@@ -133,7 +133,7 @@
             const scheme = ref();
             const uuid = ref();
             const result = ref();
-            const apiHelper = new ApiHelper(store.getters.getBackendUrl);
+            const apiHelper = new ApiHelper(store.getBackendUrl);
             const utils = new Utils();
             const cryptoHelper = new CryptoHelper();
             const smevsignAlgorithmNames = {
@@ -143,7 +143,7 @@
             
             onMounted(async () => {
                 console.log('onMounted CreateXml');
-                store.dispatch('updatePageHeader', 'Создание xml');
+                store.updatePageHeader('Создание xml');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {

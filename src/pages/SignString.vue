@@ -63,9 +63,9 @@
 <script>
     import ApiHelper from '../helpers/ApiHelper.js';
     import { Base64 } from 'js-base64';
-    import { useStore } from 'vuex'
-    import { ref, reactive, onMounted } from 'vue'
-    import JsonButton from '../components/JsonButton.vue'
+    import { useStore } from '@/store';
+    import { ref, reactive, onMounted } from 'vue';
+    import JsonButton from '../components/JsonButton.vue';
     export default {
         setup() {
             const store = useStore();
@@ -74,11 +74,11 @@
             const container = ref();
             const result = ref();
             const urlSafe = ref(false);
-            const apiHelper = new ApiHelper(store.getters.getBackendUrl);
+            const apiHelper = new ApiHelper(store.getBackendUrl);
 
             onMounted(async () => {
                 console.log('onMounted SignFile');
-                store.dispatch('updatePageHeader', 'Подпись строки');
+                store.updatePageHeader('Подпись строки');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {

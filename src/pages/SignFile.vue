@@ -94,9 +94,9 @@
 <script>
     import ApiHelper from '../helpers/ApiHelper.js';
     import { Base64 } from 'js-base64';
-    import { useStore } from 'vuex'
-    import { ref, reactive, onMounted } from 'vue'
-    import JsonButton from '../components/JsonButton.vue'
+    import { useStore } from '@/store';
+    import { ref, reactive, onMounted } from 'vue';
+    import JsonButton from '../components/JsonButton.vue';
     export default {
         setup() {
             const store = useStore();
@@ -108,18 +108,18 @@
             const containers = reactive({value: []});
             const container = ref();
             const result = ref();
-            const apiHelper = new ApiHelper(store.getters.getBackendUrl);
+            const apiHelper = new ApiHelper(store.getBackendUrl);
 
             onMounted(async () => {
                 console.log('onMounted SignFile');
-                store.dispatch('updatePageHeader', 'Подпись файлов');
+                store.updatePageHeader('Подпись файлов');
                 let response = await apiHelper.get('containers')
                 containers.value = response;
                 if (containers.value.length > 0) {
                     container.value = containers.value[0].value;
                 }
-                console.log(store.getters.getStoragePath);
-                storage.value = store.getters.getStoragePath;
+                console.log(store.getStoragePath);
+                storage.value = store.getStoragePath;
             })
             
             async function SubmitForm() {
@@ -163,11 +163,11 @@
             }
             function saveStoragePath() {
                 localStorage.setItem('storagePath', storage.value)
-                store.dispatch('updateStoragePath', storage.value);
+                store.updateStoragePath(storage.value);
             }
             function deleteStoragePath() {
                 localStorage.removeItem('storagePath');
-                store.dispatch('updateStoragePath', '');
+                store.updateStoragePath('');
                 storage.value = '';
             }
             return {

@@ -1,6 +1,6 @@
-import { createStore } from 'vuex'
+import { defineStore } from 'pinia'
 
-export const store = createStore({
+export const useStore = defineStore('store', {
     state() {
         return {
             backendUrl: 'http://127.0.0.1:8080/api/',
@@ -9,24 +9,8 @@ export const store = createStore({
             updated: false
         }
     },
-    mutations: {
-        setSystemInfo(state, data) {
-            state.backendUrl = data.backendUrl;
-            state.storagePath = data.storagePath;
-            state.updated = true
-        },
-        setPageHeader(state, value) {
-            state.pageHeader = value;
-        },
-        setBackendUrl(state, value) {
-            state.backendUrl = value;
-        },
-        setStoragePath(state, value) {
-            state.storagePath = value;
-        },
-    },
     actions: {
-        async updateSystemInfo({ commit }) {
+        async updateSystemInfo() {
             console.log('store/index updateSystemInfo');
             let data = {
                 'backendUrl': 'http://127.0.0.1:8080/api/',
@@ -40,16 +24,18 @@ export const store = createStore({
             if ('storagePath' in localStorage) {
                 data.storagePath = localStorage.getItem('storagePath');
             }
-            commit('setSystemInfo', data);
+            this.backendUrl = data.backendUrl;
+            this.storagePath = data.storagePath;
+            this.updated = true
         },
-        async updatePageHeader({ commit }, value) {
-            commit('setPageHeader', value);
+        async updatePageHeader(value) {
+            this.pageHeader = value;
         },
-        async updateBackendUrl({ commit }, value) {
-            commit('setBackendUrl', value);
+        async updateBackendUrl(value) {
+            this.backendUrl = value;
         },
-        async updateStoragePath({ commit }, value) {
-            commit('setStoragePath', value);
+        async updateStoragePath(value) {
+            this.storagePath = value;
         }
     },
     getters: {
@@ -61,6 +47,9 @@ export const store = createStore({
         },
         getPageHeader(state) {
             return state.pageHeader;
+        },
+        getUpdated(state) {
+            return state.updated;
         }
     }
 })
